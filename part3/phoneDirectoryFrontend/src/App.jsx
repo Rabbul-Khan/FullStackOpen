@@ -60,10 +60,17 @@ const App = () => {
             setTimeout(() => {
               setSuccessMessage('');
             }, 5000);
+
             setSuccessMessage(`Updated ${response.data.name}`);
             setNewPerson({ name: '', number: '' });
 
             setPersons(
+              persons.map((person) =>
+                person.id !== updateObject.id ? person : updateObject
+              )
+            );
+
+            setSearchResults(
               persons.map((person) =>
                 person.id !== updateObject.id ? person : updateObject
               )
@@ -86,18 +93,24 @@ const App = () => {
       }
     }
 
-    personsServices.add(newPerson).then((response) => {
-      setPersons(persons.concat(response.data));
-      setSearchResults(persons.concat(response.data));
+    personsServices
+      .add(newPerson)
+      .then((response) => {
+        setPersons(persons.concat(response.data));
+        setSearchResults(persons.concat(response.data));
 
-      setNewPerson({ name: '', number: '' });
-      setTimeout(() => {
-        setSuccessMessage('');
-      }, 5000);
-      setSuccessMessage(`Added ${response.data.name}`);
-    });
-
-    setNewPerson({ name: '', number: '' });
+        setNewPerson({ name: '', number: '' });
+        setTimeout(() => {
+          setSuccessMessage('');
+        }, 5000);
+        setSuccessMessage(`Added ${response.data.name}`);
+      })
+      .catch((error) => {
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 5000);
+        setErrorMessage(error.response.data.error);
+      });
   };
 
   const handleDelete = (person) => {
